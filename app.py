@@ -1,7 +1,4 @@
-from ctypes import WinDLL
 from tkinter import *
-
-from setuptools import Command
 
         
 class Inicio:
@@ -15,7 +12,7 @@ class Inicio:
         self.container2 = Frame(self.telaInicio)
         self.container2.pack(padx=50, pady=4)
         self.container3 = Frame(self.telaInicio)
-        self.container3.pack(padx=50, pady=4)
+        self.container3.pack(padx=50, pady=8)
         
         # Widgets
         self.tituloLabel = Label(self.container1, text='Sistema de Estoque')
@@ -41,7 +38,7 @@ class ListaProduto:
     def __init__(self, master, root):
         self.origem = root
         self.telaListaProdutos = master
-        self.telaListaProdutos.title('Lista de Produtos')
+        self.telaListaProdutos.title('Lista')
         
         # Containers
         self.container1 = Frame(self.telaListaProdutos)
@@ -64,8 +61,9 @@ class CadastroProduto:
     def __init__(self, master, root):
         self.origem = root
         self.telaCadastroProdutos = master
-        self.telaCadastroProdutos.title('Cadastro de Produtos')
+        self.telaCadastroProdutos.title('Cadastro')
 
+        # Containers
         self.container1 = Frame(self.telaCadastroProdutos)
         self.container1.pack(padx=50, pady=15)
         self.container2 = Frame(self.telaCadastroProdutos)
@@ -81,6 +79,7 @@ class CadastroProduto:
         self.container7 = Frame(self.telaCadastroProdutos)
         self.container7.pack(side=RIGHT, padx=50, pady=15)
 
+        # Widgets
         self.tituloLabel = Label(self.container1, text='Cadastro de Produtos')
         self.tituloLabel.pack()
 
@@ -120,7 +119,10 @@ class CadastroProduto:
         self.voltarButton.pack()
 
     def cadastrar_produto(self):
-        pass
+        print(self.codigo.get())
+        print(self.nome.get())
+        print(self.preco.get())
+        print(self.selecionado.get())
 
 
     def voltar(self):
