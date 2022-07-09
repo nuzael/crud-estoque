@@ -1,8 +1,9 @@
+from sqlite3 import Cursor
 from banco import Banco
 
 
-class Produto:
-    def __init__(self, produtoID, codigo, nome, preco, categoria):
+class Produto(object):
+    def __init__(self, produtoID='', codigo='', nome='', preco='', categoria=''):
         self.produtoID = produtoID
         self.codigo = codigo
         self.nome = nome
@@ -21,3 +22,12 @@ class Produto:
             return 'Produto inserido com sucesso!'
         except:
             return 'Ocorreu um erro na inserção do produto.'
+
+    def listar_produto(self):
+        banco = Banco()
+        cursor = banco.conexao.cursor()
+
+        cursor.execute(f'SELECT * FROM produtos')
+        resultado = cursor.fetchall()
+        cursor.close()
+        return resultado

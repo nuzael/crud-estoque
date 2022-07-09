@@ -1,9 +1,15 @@
+from tarfile import PAX_FIELDS
 from tkinter import *
+from tkinter import messagebox
+from tkinter.font import BOLD
+from tkinter.ttk import Treeview
+from produto import Produto
 
         
 class Inicio:
     def __init__(self, master):
         self.telaInicio = master
+        self.telaInicio.geometry('300x200')
         self.telaInicio.title('Início')
 
         # Containers
@@ -15,7 +21,7 @@ class Inicio:
         self.container3.pack(padx=50, pady=8)
         
         # Widgets
-        self.tituloLabel = Label(self.container1, text='Sistema de Estoque')
+        self.tituloLabel = Label(self.container1, text='Sistema de Estoque', font=BOLD)
         self.tituloLabel.pack() 
 
         self.listaButton = Button(self.container2, text='Lista de Produtos', command=self.opcao_listar)
@@ -39,22 +45,74 @@ class ListaProduto:
         self.origem = root
         self.telaListaProdutos = master
         self.telaListaProdutos.title('Lista')
-        
+
         # Containers
         self.container1 = Frame(self.telaListaProdutos)
         self.container1.pack(padx=50, pady=15)
         self.container2 = Frame(self.telaListaProdutos)
         self.container2.pack(padx=50, pady=4)
+        self.container3 = Frame(self.telaListaProdutos)
+        self.container3.pack(side=LEFT, padx=50, pady=10)
+        self.container4 = Frame(self.telaListaProdutos)
+        self.container4.pack(side=RIGHT, padx=50, pady=4)
+
 
         # Widgets
-        self.tituloLabel = Label(self.container1, text='Lista de Produtos')
+        self.tituloLabel = Label(self.container1, text='Lista de Produtos', font=BOLD)
         self.tituloLabel.pack()
 
-        self.voltarButton = Button(self.container1, text='Voltar', command=self.voltar)
+        self.lista = Treeview(self.container2, columns=('produtoID', 'codigo', 'nome', 'preco', 'categoria'))
+        self.lista.configure(height=25)
+
+        self.lista.heading('#0', text='', anchor=CENTER)
+        self.lista.heading('produtoID', text='produtoID', anchor=CENTER)
+        self.lista.heading('codigo', text='Código', anchor=CENTER)
+        self.lista.heading('nome', text='Nome', anchor=CENTER)
+        self.lista.heading('preco', text='Preço', anchor=CENTER)
+        self.lista.heading('categoria', text='Categoria', anchor=CENTER)
+
+        self.lista.column('#0', width=0, stretch=NO)
+        self.lista.column('produtoID', anchor=CENTER)
+        self.lista.column('codigo', anchor=CENTER)
+        self.lista.column('nome', anchor=CENTER)
+        self.lista.column('preco', anchor=CENTER)
+        self.lista.column('categoria', anchor=CENTER)
+
+        produto = Produto()
+        for i in produto.listar_produto():
+            self.lista.insert('', 'end', values=i)
+        self.lista.pack()
+
+        self.buscarNomeLabel = Label(self.container3, text='Nome')
+        self.buscarNomeLabel.pack(side=LEFT)
+        self.buscar = Entry(self.container3, width=30)
+        self.buscar.pack(side=LEFT, padx=2)
+        self.buscarButton = Button(self.container3, text='Buscar', command=self.buscar_registro)
+        self.buscarButton.pack(side=LEFT, padx=2)
+        self.mostrarTodosButton = Button(self.container3, text='Mostrar Todos', command=self.mostrar_todos)
+        self.mostrarTodosButton.pack(side=RIGHT)
+
+        self.voltarButton = Button(self.container4, text='Voltar', command=self.voltar)
         self.voltarButton.pack()
 
+
+    def buscar_registro(self):
+        produto = Produto()
+        for i in produto.listar_produto():
+            if self.buscar.get() in i:
+                self.lista.delete(*self.lista.get_children())
+                self.lista.insert('', 'end', values=i)
+        self.lista.pack()
+
+    def mostrar_todos(self):
+        self.lista.delete(*self.lista.get_children())
+        produto = Produto()
+        for i in produto.listar_produto():
+            self.lista.insert('', 'end', values=i)
+        self.lista.pack()
+
     def voltar(self):
-        self.origem.deiconify()
+        self.origem.deiconify() 
         self.telaListaProdutos.destroy()
 
 class CadastroProduto:
@@ -80,7 +138,7 @@ class CadastroProduto:
         self.container7.pack(side=RIGHT, padx=50, pady=15)
 
         # Widgets
-        self.tituloLabel = Label(self.container1, text='Cadastro de Produtos')
+        self.tituloLabel = Label(self.container1, text='Cadastro de Produtos', font=BOLD)
         self.tituloLabel.pack()
 
         self.codigoLabel = Label(self.container2, text='Código', width=8)
@@ -101,6 +159,7 @@ class CadastroProduto:
         categorias = [
             'Alimentos',
             'Eletrônicos',
+            'Limpeza'
             'Roupas',
             'Papelaria',
         ]
@@ -119,11 +178,25 @@ class CadastroProduto:
         self.voltarButton.pack()
 
     def cadastrar_produto(self):
-        print(self.codigo.get())
-        print(self.nome.get())
-        print(self.preco.get())
-        print(self.selecionado.get())
+        produto = Produto()
+        produto.codigo = self.codigo.get()
+        produto.nome = self.nome.get()
+        if ',' in self.preco.get():
+            a = self.preco.get().replace(',', '.')
+            produto.preco = a
+        else:
+            produto.preco = self.preco.get()
+        produto.categoria = self.selecionado.get()
 
+        if (produto.codigo and produto.nome and produto.preco):
+            produto.cadastrar_produto()
+            messagebox.showinfo('Sucesso', 'Produto cadastrado com sucesso.')
+
+            self.codigo.delete(0, END)
+            self.nome.delete(0, END)
+            self.preco.delete(0, END)
+        else:
+            messagebox.showwarning('Aviso', 'Nenhum campo pode estar vazio.')
 
     def voltar(self):
         self.origem.deiconify()
@@ -132,3 +205,4 @@ class CadastroProduto:
 root = Tk()
 Inicio(root)
 root.mainloop()
+

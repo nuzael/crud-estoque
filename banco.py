@@ -11,12 +11,10 @@ class Banco:
 
         cursor.execute('''
             CREATE table IF NOT EXISTS produtos (
-                produtoID INT NOT NULL PRIMARY KEY AUTO_INCREMENT
-                codigo INT NOT NULL
-                nome VARCHAR(100)
-                preco DECIMAL
-                categoria VARCHAR(100)
-            )
-        ''')
+                produtoID INTEGER PRIMARY KEY AUTOINCREMENT,
+                codigo INT NOT NULL,
+                nome VARCHAR(100),
+                preco DECIMAL,
+                categoria VARCHAR(100))''')
         self.conexao.commit()
         cursor.close()
