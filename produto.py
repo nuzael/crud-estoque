@@ -23,6 +23,30 @@ class Produto(object):
         except:
             return 'Ocorreu um erro na inserção do produto.'
 
+    def deletar_produto(self, id):
+        banco = Banco()
+        try:
+            cursor = banco.conexao.cursor()
+
+            cursor.execute(f'DELETE FROM produtos WHERE produtoID = {id};')
+
+            banco.conexao.commit()
+            cursor.close()
+        except:
+            return 'Ocorreu um erro na exclusão do produto.'
+
+    def editar_produto(self):
+        banco = Banco()
+        try:
+            cursor = banco.conexao.cursor()
+
+            cursor.execute(f'UPDATE produtos SET codigo = "{self.codigo}", nome = "{self.nome}", preco = {self.preco}, categoria = "{self.categoria}" WHERE produtoID = {self.produtoID}')
+
+            banco.conexao.commit()
+            cursor.close()
+        except:
+            return 'Ocorreu um erro na edição do produto.'
+
     def listar_produto(self):
         banco = Banco()
         cursor = banco.conexao.cursor()

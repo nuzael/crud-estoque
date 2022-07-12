@@ -1,4 +1,3 @@
-from tarfile import PAX_FIELDS
 from tkinter import *
 from tkinter import messagebox
 from tkinter.font import BOLD
@@ -54,7 +53,9 @@ class ListaProduto:
         self.container3 = Frame(self.telaListaProdutos)
         self.container3.pack(side=LEFT, padx=50, pady=10)
         self.container4 = Frame(self.telaListaProdutos)
-        self.container4.pack(side=RIGHT, padx=50, pady=4)
+        self.container4.pack(side=LEFT, padx=50, pady=10)
+        self.container5 = Frame(self.telaListaProdutos)
+        self.container5.pack(side=RIGHT, padx=50, pady=4)
 
 
         # Widgets
@@ -90,9 +91,14 @@ class ListaProduto:
         self.buscarButton = Button(self.container3, text='Buscar', command=self.buscar_registro)
         self.buscarButton.pack(side=LEFT, padx=2)
         self.mostrarTodosButton = Button(self.container3, text='Mostrar Todos', command=self.mostrar_todos)
-        self.mostrarTodosButton.pack(side=RIGHT)
+        self.mostrarTodosButton.pack(side=LEFT)
 
-        self.voltarButton = Button(self.container4, text='Voltar', command=self.voltar)
+        self.editarButton = Button(self.container4, text='Editar', command=self.opcao_editar)
+        self.editarButton.pack(side=LEFT, padx=2)
+        self.excluirButton = Button(self.container4, text='Excluir', command=self.deletar_registro)
+        self.excluirButton.pack(side=RIGHT)
+
+        self.voltarButton = Button(self.container5, text='Voltar', command=self.voltar)
         self.voltarButton.pack()
 
 
@@ -103,6 +109,28 @@ class ListaProduto:
                 self.lista.delete(*self.lista.get_children())
                 self.lista.insert('', 'end', values=i)
         self.lista.pack()
+
+    def opcao_editar(self):
+        try:
+            selecionado = self.lista.selection()[0]
+            valores = self.lista.item(selecionado, 'values')
+            self.novaTela = Toplevel(self.telaListaProdutos)
+            EdicaoProduto(self.novaTela, self.telaListaProdutos, valores)
+        except:
+            messagebox.showerror('Erro', 'Selecione um registro a ser editado.')
+
+    def deletar_registro(self):
+        produto = Produto()
+        try:
+            selecionado = self.lista.selection()[0]
+            valores = self.lista.item(selecionado, 'values')
+            id = valores[0]
+            resposta = messagebox.askyesno('Cuidado', 'Deseja deletar esse registro pra sempre?')
+            if resposta:
+                produto.deletar_produto(id)
+                self.lista.delete(selecionado)
+        except:
+            messagebox.showerror('Erro', 'Selecione um registro a ser deletado.')
 
     def mostrar_todos(self):
         self.lista.delete(*self.lista.get_children())
@@ -156,7 +184,7 @@ class CadastroProduto:
         self.preco = Entry(self.container4, width=30)
         self.preco.pack()
 
-        categorias = [
+        self.categorias = [
             'Alimentos',
             'Eletrônicos',
             'Limpeza'
@@ -165,10 +193,10 @@ class CadastroProduto:
         ]
 
         self.selecionado = StringVar()
-        self.selecionado.set(categorias[0])
+        self.selecionado.set(self.categorias[0])
         self.categoriaLabel = Label(self.container5, text='Categoria', width=8)
         self.categoriaLabel.pack(side=LEFT)
-        self.categoria = OptionMenu(self.container5, self.selecionado, *categorias)
+        self.categoria = OptionMenu(self.container5, self.selecionado, *self.categorias)
         self.categoria.pack()
 
         self.cadastrarButton = Button(self.container6, text='Cadastrar', command=self.cadastrar_produto)
@@ -201,6 +229,85 @@ class CadastroProduto:
     def voltar(self):
         self.origem.deiconify()
         self.telaCadastroProdutos.destroy()
+
+class EdicaoProduto:
+    def __init__(self, master, root, valores):
+        self.origem = root
+        self.telaEdicao = master
+        self.telaEdicao.title('Editar')
+        self.valores = valores
+        
+        self.container1 = Frame(self.telaEdicao)
+        self.container1.pack(padx=50, pady=15)
+        self.container2 = Frame(self.telaEdicao)
+        self.container2.pack(padx=50, pady=4)
+        self.container3 = Frame(self.telaEdicao)
+        self.container3.pack(padx=50, pady=4)
+        self.container4 = Frame(self.telaEdicao)
+        self.container4.pack(padx=50, pady=4)
+        self.container5 = Frame(self.telaEdicao)
+        self.container5.pack(padx=50, pady=4)
+        self.container6 = Frame(self.telaEdicao)
+        self.container6.pack(padx=50, pady=15)
+
+        self.tituloLabel = Label(self.container1, text='Alteração dos Registros', font=BOLD)
+        self.tituloLabel.pack()
+
+        self.codigoEditarLabel = Label(self.container2, text='Código', width=8)
+        self.codigoEditarLabel.pack(side=LEFT)
+        self.codigoEditar = Entry(self.container2, width=30)
+        self.codigoEditar.insert(0, self.valores[1])
+        self.codigoEditar.pack(side=LEFT)
+
+        self.nomeEditarLabel = Label(self.container3, text='Nome', width=8)
+        self.nomeEditarLabel.pack(side=LEFT)
+        self.nomeEditar = Entry(self.container3, width=30)
+        self.nomeEditar.insert(0, self.valores[2])
+        self.nomeEditar.pack(side=LEFT)
+
+        self.precoEditarLabel = Label(self.container4, text='Preço', width=8)
+        self.precoEditarLabel.pack(side=LEFT)
+        self.precoEditar = Entry(self.container4, width=30)
+        self.precoEditar.insert(0, self.valores[3])
+        self.precoEditar.pack(side=LEFT)
+
+        self.categorias = [
+            'Alimentos',
+            'Eletrônicos',
+            'Limpeza',
+            'Roupas',
+            'Papelaria',
+        ]
+
+        self.selecionado = StringVar()
+        self.selecionado.set(self.valores[4])
+
+        self.categoriaEditarLabel = Label(self.container5, text='Categoria', width=8)
+        self.categoriaEditarLabel.pack(side=LEFT)
+        self.categoriaEditar = OptionMenu(self.container5, self.selecionado, *self.categorias)
+        self.categoriaEditar.pack()
+
+        self.confirmarEditarButton = Button(self.container6, text='Confirmar', command=self.editar_registro)
+        self.confirmarEditarButton.pack()
+
+    def editar_registro(self):
+        produto = Produto()
+        produto.produtoID = self.valores[0]
+        produto.codigo = self.codigoEditar.get()
+        produto.nome = self.nomeEditar.get()
+        if ',' in self.precoEditar.get():
+            a = self.precoEditar.get().replace(',', '.')
+            produto.preco = a
+        else:
+            produto.preco = self.precoEditar.get()
+            produto.categoria = self.selecionado.get()
+
+        if (produto.codigo and produto.nome and produto.preco):
+            produto.editar_produto()
+            messagebox.showinfo('Sucesso', 'Produto editado com sucesso.')
+            self.telaEdicao.destroy()
+        else:
+            messagebox.showwarning('Aviso', 'Nenhum campo pode estar vazio.')
 
 root = Tk()
 Inicio(root)
