@@ -84,13 +84,11 @@ class ListaProduto:
             self.lista.insert('', 'end', values=i)
         self.lista.pack()
 
-        self.buscarNomeLabel = Label(self.container3, text='Nome')
-        self.buscarNomeLabel.pack(side=LEFT)
         self.buscar = Entry(self.container3, width=30)
         self.buscar.pack(side=LEFT, padx=2)
         self.buscarButton = Button(self.container3, text='Buscar', command=self.buscar_registro)
         self.buscarButton.pack(side=LEFT, padx=2)
-        self.mostrarTodosButton = Button(self.container3, text='Mostrar Todos', command=self.mostrar_todos)
+        self.mostrarTodosButton = Button(self.container3, text='Mostrar Todos / Atualizar Lista', command=self.mostrar_todos)
         self.mostrarTodosButton.pack(side=LEFT)
 
         self.editarButton = Button(self.container4, text='Editar', command=self.opcao_editar)
@@ -101,12 +99,29 @@ class ListaProduto:
         self.voltarButton = Button(self.container5, text='Voltar', command=self.voltar)
         self.voltarButton.pack()
 
-
     def buscar_registro(self):
         produto = Produto()
+        c = 0
         for i in produto.listar_produto():
-            if self.buscar.get() in i:
-                self.lista.delete(*self.lista.get_children())
+            if self.buscar.get() == str(i[1]):
+                if c == 0:
+                    self.lista.delete(*self.lista.get_children())
+                    c += 1
+                self.lista.insert('', 'end', values=i)
+            elif self.buscar.get().upper() == i[2].upper():
+                if c == 0:
+                    self.lista.delete(*self.lista.get_children())
+                    c += 1
+                self.lista.insert('', 'end', values=i)
+            elif self.buscar.get().upper() == str(i[3]):
+                if c == 0:
+                    self.lista.delete(*self.lista.get_children())
+                    c += 1
+                self.lista.insert('', 'end', values=i)
+            elif self.buscar.get().upper() == i[4].upper():
+                if c == 0:
+                    self.lista.delete(*self.lista.get_children())
+                    c += 1
                 self.lista.insert('', 'end', values=i)
         self.lista.pack()
 
@@ -118,6 +133,8 @@ class ListaProduto:
             EdicaoProduto(self.novaTela, self.telaListaProdutos, valores)
         except:
             messagebox.showerror('Erro', 'Selecione um registro a ser editado.')
+        
+        self.mostrar_todos()
 
     def deletar_registro(self):
         produto = Produto()
