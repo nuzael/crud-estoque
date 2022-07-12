@@ -1,4 +1,5 @@
 from tkinter import *
+from tkinter import ttk
 from tkinter import messagebox
 from tkinter.font import BOLD
 from tkinter.ttk import Treeview
@@ -63,7 +64,10 @@ class ListaProduto:
         self.tituloLabel.pack()
 
         self.lista = Treeview(self.container2, columns=('produtoID', 'codigo', 'nome', 'preco', 'categoria'))
-        self.lista.configure(height=25)
+        self.lista.pack(side=LEFT)
+        self.listaScroll = ttk.Scrollbar(self.container2, orient='vertical', command=self.lista.yview)
+        self.listaScroll.pack(side=RIGHT, fill='y')
+        self.lista.configure(height=25, yscrollcommand=self.listaScroll.set)
 
         self.lista.heading('#0', text='', anchor=CENTER)
         self.lista.heading('produtoID', text='produtoID', anchor=CENTER)
@@ -82,7 +86,6 @@ class ListaProduto:
         produto = Produto()
         for i in produto.listar_produto():
             self.lista.insert('', 'end', values=i)
-        self.lista.pack()
 
         self.buscar = Entry(self.container3, width=30)
         self.buscar.pack(side=LEFT, padx=2)
